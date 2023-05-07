@@ -1,11 +1,11 @@
 import { FormEvent, useEffect, useRef } from "react";
+import { Link, useNavigate } from "react-router-dom";
 import axios from "axios";
 
 import arrow from "../assets/arrow-right.svg";
 import google from "../assets/google.svg";
 import facebook from "../assets/facebook.svg";
 import illustration from "../assets/illustration.svg";
-import { useNavigate } from "react-router-dom";
 
 function Login() {
   const navigate = useNavigate();
@@ -21,7 +21,7 @@ function Login() {
         headers: { Authorization: `Bearer ${token}` },
       }).then(({ data }) => {
         console.log(data);
-        navigate("/")
+        navigate("/");
       }).catch((err) => {
         console.log(err);
       });
@@ -31,16 +31,19 @@ function Login() {
   const handleLoginSubmit = (event: FormEvent) => {
     event.preventDefault();
 
-    const email = emailRef?.current?.value;
+    const email = (emailRef?.current?.value)?.toLowerCase();
+
     const password = passwordRef?.current?.value;
+    if (password && password?.length < 6) return;
 
     axios
       .post("http://localhost:3003/login", { email, password })
       .then(({ data }) => {
         // resposta do server
         localStorage.setItem("token", data.token);
+
         console.log(data);
-        navigate("/");
+        return navigate("/");
       })
       .catch((err) => {
         // erro do servidor
@@ -50,7 +53,7 @@ function Login() {
 
   return (
     <div className="flex items-center justify-center lg:justify-around p-6 h-screen bg-[#FFF]">
-      <div className="flex flex-col h-full justify-around">
+      <div className="w-full max-w-xl lg:w-[576px] flex flex-col h-full justify-around">
         <div className="flex justify-between lg:flex-col gap-6">
           <h1 className="font-bold text-3xl md:text-4xl">Sign in</h1>
           <div className="hidden lg:flex items-center gap-6">
@@ -83,9 +86,10 @@ function Login() {
               </label>
               <input
                 className="h-[50px] rounded-xl text-gray-500 outline-none bg-[#627C85] bg-opacity-10 border border-[#627C85] p-2"
-                type="text"
+                type="email"
                 name="email"
                 id="email"
+                required
                 ref={emailRef}
               />
             </span>
@@ -93,22 +97,24 @@ function Login() {
             <span className="flex flex-col gap-1 max-w-full">
               <label
                 className="pl-3 text-sm md:text-[16px] font-medium"
-                htmlFor="email"
+                htmlFor="password"
               >
                 Password
               </label>
               <input
                 className="h-[50px] rounded-xl text-gray-500 outline-none bg-[#627C85] bg-opacity-10 border border-[#627C85] p-2"
-                type="text"
+                type="password"
                 name="password"
                 id="password"
+                required
+                minLength={6}
                 ref={passwordRef}
               />
             </span>
           </div>
 
           <button
-            className="flex justify-center items-center mt-6 bg-[#F34848] rounded-3xl w-[60px] h-[60px] md:w-[70px] md:h-[70px] shadow-xl"
+            className="flex justify-center items-center mt-6 bg-[#F34848] hover:bg-opacity-90 active:bg-opacity-90 rounded-3xl w-[60px] h-[60px] md:w-[70px] md:h-[70px] shadow-xl"
             type="submit"
           >
             <img src={arrow} alt="send" />
@@ -117,7 +123,9 @@ function Login() {
 
         <span className="text-sm md:text-[16px]">
           Doesn't have an account yet?{" "}
-          <a href="/login" className="text-[#627C85] underline">Sign up</a>
+          <Link to="/register" className="text-[#627C85] underline">
+            Sign up
+          </Link>
         </span>
       </div>
       <div className="my-auto">
