@@ -1,9 +1,18 @@
-import { useEffect } from "react";
+import { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import axios from "axios";
 
+interface User {
+  id: number;
+  name: string;
+  email: string;
+  created_at: string;
+}
+
 export default function App() {
   const navigate = useNavigate();
+
+  const [user, setUser] = useState<User>();
 
   useEffect(() => {
     const token = localStorage.getItem("token");
@@ -16,13 +25,34 @@ export default function App() {
       headers: { Authorization: `Bearer ${token}` },
     }).then(({ data }) => {
       console.log(data);
-    }).catch((err) => console.log(err));
+      setUser(data);
+    }).catch((err) => {
+      console.log(err);
+      navigate("/login");
+    });
   }, []);
 
+  const handleSignOut = () => {
+    localStorage.removeItem("token");
+    return navigate("/login");
+  };
+
   return (
-    <div className="h-screen flex justify-center items-center">
-      <h1>usuario logado</h1>
-      <div></div>
+    <div className="h-screen flex flex-col justify-center items-center">
+      <div>
+        <ul>
+          <li>
+            nome: {user?.name}
+          </li>
+          <li>
+            email: {user?.email}
+          </li>
+          <li>
+            criado em: {user?.created_at}
+          </li>
+        </ul>
+        <button onClick={handleSignOut}>Sair</button>
+      </div>
     </div>
   );
 }

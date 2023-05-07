@@ -17,7 +17,14 @@ function Login() {
     const token = localStorage.getItem("token");
 
     if (token) {
-      return navigate("/");
+      axios.get("http://localhost:3003/", {
+        headers: { Authorization: `Bearer ${token}` },
+      }).then(({ data }) => {
+        console.log(data);
+        navigate("/")
+      }).catch((err) => {
+        console.log(err);
+      });
     }
   }, []);
 
