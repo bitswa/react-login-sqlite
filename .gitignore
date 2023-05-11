@@ -2,3 +2,4 @@ node_modules
 database.db
 .env
 *.local
+/backend/src/database/*.db
