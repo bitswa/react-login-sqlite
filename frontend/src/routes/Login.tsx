@@ -17,10 +17,9 @@ function Login() {
     const token = localStorage.getItem("token");
 
     if (token) {
-      axios.get("http://localhost:3003/", {
+      axios.get(`http://localhost:${import.meta.env.VITE_PORT}/`, {
         headers: { Authorization: `Bearer ${token}` },
-      }).then(({ data }) => {
-        console.log(data);
+      }).then(() => {
         navigate("/");
       }).catch((err) => {
         console.log(err);
@@ -37,16 +36,15 @@ function Login() {
     if (password && password?.length < 6) return;
 
     axios
-      .post("http://localhost:3003/login", { email, password })
+      .post(`http://localhost:${import.meta.env.VITE_PORT}/login`, {
+        email,
+        password,
+      })
       .then(({ data }) => {
-        // resposta do server
         localStorage.setItem("token", data.token);
-
-        console.log(data);
         return navigate("/");
       })
       .catch((err) => {
-        // erro do servidor
         console.log(err);
       });
   };
@@ -122,7 +120,7 @@ function Login() {
         </form>
 
         <span className="text-sm md:text-[16px]">
-          Doesn't have an account yet?{" "}
+          Don't have an account yet?{" "}
           <Link to="/register" className="text-[#627C85] underline">
             Sign up
           </Link>

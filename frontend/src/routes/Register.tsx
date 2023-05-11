@@ -18,10 +18,9 @@ function Register() {
     const token = localStorage.getItem("token");
 
     if (token) {
-      axios.get("http://localhost:3003/", {
+      axios.get(`http://localhost:${import.meta.env.VITE_PORT}/`, {
         headers: { Authorization: `Bearer ${token}` },
-      }).then(({ data }) => {
-        console.log(data);
+      }).then(() => {
         navigate("/");
       }).catch((err) => {
         console.log(err);
@@ -41,16 +40,16 @@ function Register() {
     if (password && password?.length < 6) return;
 
     axios
-      .post("http://localhost:3003/register", { name, email, password })
+      .post(`http://localhost:${import.meta.env.VITE_PORT}/register`, {
+        name,
+        email,
+        password,
+      })
       .then(({ data }) => {
-        // resposta do server
         localStorage.setItem("token", data.token);
-
-        console.log(data);
         return navigate("/");
       })
       .catch((err) => {
-        // erro do servidor
         console.log(err);
       });
   };

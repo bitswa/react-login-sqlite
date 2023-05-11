@@ -18,18 +18,18 @@ class UsersController {
       throw new AppError("Email já está em uso.");
     }
 
-    const hashedPassword = await hash(password, 8);
+    const hashedPassword = await hash(password, process.env.BCRYPT_SALT);
 
     const { lastID } = await database.run(
       "INSERT INTO users (name, email, password) VALUES (?, ?, ?)",
       [
         name,
-        email,
+        email.toLowerCase(),
         hashedPassword,
       ],
     );
 
-    const token = jwt.sign({ id: lastID }, process.env.JWT_KEY ?? "", {
+    const token = jwt.sign({ id: lastID }, process.env.JWT_SECRET, {
       expiresIn: "8h",
     });
 
@@ -63,7 +63,7 @@ class UsersController {
       throw new AppError("E-mail ou senha invalido");
     }
 
-    const token = jwt.sign({ id: user.id }, process.env.JWT_KEY ?? "", {
+    const token = jwt.sign({ id: user.id }, process.env.JWT_SECRET, {
       expiresIn: "8h",
     });
 
@@ -75,6 +75,30 @@ class UsersController {
     });
   }
 
+  async update(req, res) {
+    const { id, name, photo } = req.body;
+
+    const database = await sqliteConnection();
+
+    await database.run(
+      "UPDATE users SET name = (?), photo_url = (?) WHERE id = (?)",
+      [
+        name,
+        photo,
+        id,
+      ],
+    );
+
+    const user = await database.get(
+      "SELECT * FROM users WHERE id = (?)",
+      [id],
+    );
+
+    const { password: _, ...newUser } = user;
+
+    res.json(newUser);
+  }
+
   async getProfile(req, res) {
     const { authorization } = req.headers;
 
@@ -84,7 +108,7 @@ class UsersController {
 
     const token = authorization.split(" ")[1];
 
-    const { id } = jwt.verify(token, process.env.JWT_KEY ?? "");
+    const { id } = jwt.verify(token, process.env.JWT_SECRET);
 
     const database = await sqliteConnection();
 
