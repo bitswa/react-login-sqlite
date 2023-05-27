@@ -5,7 +5,7 @@ import axios from 'axios';
 import arrow from '../assets/icons/arrow-right.svg';
 import google from '../assets/icons/google.svg';
 import facebook from '../assets/icons/facebook.svg';
-import illustration from '../assets/icons/illustration.svg';
+import illustration from '../assets/illustration.svg';
 
 function Login() {
 	const navigate = useNavigate();
