@@ -2,7 +2,7 @@ import { useEffect, useRef, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import axios from 'axios';
 
-import edit from '../assets/pen-to-square.svg';
+import edit from '../assets/icons/pen-to-square.svg';
 
 interface User {
 	id: number;
